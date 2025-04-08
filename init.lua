@@ -1008,8 +1008,21 @@ require('lazy').setup({
     ---@module "neo-tree"
     ---@type neotree.Config?
     opts = {
-      -- fill any relevant options here
+      window = {
+        position = 'float',
+        mappings = {
+          ['o'] = 'open',
+        },
+      },
     },
+    config = function(_, opts)
+      require('neo-tree').setup(opts)
+
+      vim.keymap.set('n', '<leader>e', '<Cmd>Neotree toggle<CR>')
+      vim.keymap.set('n', '<leader>o', function()
+        vim.cmd 'Neotree reveal'
+      end)
+    end,
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -1176,33 +1189,7 @@ vim.keymap.set('n', '<leader>fhn', function()
   mark:next()
 end, { desc = 'Next Buffer' })
 
-----
 
--- require('Comment').setup {
---   -- Disable default `gc` mappings
---   mappings = {
---     basic = false, -- Disables `gc`, `gcc`, etc.
---     extra = false, -- Disables `gco`, `gcO`, `gcA`, etc.
---   },
--- }
 
--- Add your own keybindings
-local commentApi = require 'Comment.api'
 
--- Normal Mode: Ctrl + /
-vim.keymap.set('n', '<C-_>', commentApi.toggle.linewise.current, { noremap = true, silent = true })
 
--- Visual Mode: Ctrl + /
-vim.keymap.set('x', '<C-_>', function()
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<ESC>', true, false, true), 'nx', false)
-  commentApi.toggle.linewise(vim.fn.visualmode())
-end, { noremap = true, silent = true })
-
---    ***  Neotree  ***
-
-vim.keymap.set('n', '<leader>e', '<Cmd>Neotree toggle<CR>')
-
-vim.keymap.set('n', '<leader>o', function()
-  vim.cmd 'Neotree reveal'
-  vim.cmd 'wincmd p' -- Switch back to the last window
-end)
