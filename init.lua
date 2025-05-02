@@ -1014,6 +1014,13 @@ require('lazy').setup({
           ['o'] = 'open',
         },
       },
+      filesystem = {
+        filtered_items = {
+          visible = true,
+          hide_dotfiles = false,
+          hide_gitignored = false,
+        },
+      },
     },
     config = function(_, opts)
       require('neo-tree').setup(opts)
@@ -1188,8 +1195,3 @@ end, { desc = 'Previous Buffer' })
 vim.keymap.set('n', '<leader>fhn', function()
   mark:next()
 end, { desc = 'Next Buffer' })
-
-
-
-
-
