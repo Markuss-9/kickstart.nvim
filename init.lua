@@ -993,6 +993,26 @@ require('lazy').setup({
     'numToStr/Comment.nvim',
     config = function()
       require('Comment').setup()
+
+      local commentApi = require 'Comment.api'
+
+      --- Normal Mode: Ctrl + /
+      vim.keymap.set('n', '<C-_>', commentApi.toggle.linewise.current, { noremap = true, silent = true })
+
+      --- Visual Mode: Ctrl + /
+      vim.keymap.set('x', '<C-_>', function()
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<ESC>', true, false, true), 'nx', false)
+        commentApi.toggle.linewise(vim.fn.visualmode())
+      end, { noremap = true, silent = true })
+
+      --- Normal Mode: Ctrl + /
+      vim.keymap.set('n', '<C-/>', commentApi.toggle.linewise.current, { noremap = true, silent = true })
+
+      --- Visual Mode: Ctrl + /
+      vim.keymap.set('x', '<C-/>', function()
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<ESC>', true, false, true), 'nx', false)
+        commentApi.toggle.linewise(vim.fn.visualmode())
+      end, { noremap = true, silent = true })
     end,
   },
   {
