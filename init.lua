@@ -176,6 +176,8 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+vim.keymap.set('n', '[p', ':lua vim.diagnostic.open_float()<CR>', { desc = 'Open diagnostic float', noremap = true, silent = true })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -186,8 +188,8 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 vim.keymap.set('n', '<leader>q', '<cmd>q<CR>', { desc = 'Quit' })
 vim.keymap.set('n', '<leader>w', '<cmd>w<CR>', { desc = 'Write (save)' })
 
-vim.keymap.set('n', '<C-Left>', '<cmd>bprevious<CR>', { desc = 'Go to the previous buffer' })
-vim.keymap.set('n', '<C-Right>', '<cmd>bnext<CR>', { desc = 'Go to the next buffer' })
+vim.keymap.set('n', '<S-h>', '<cmd>bprevious<CR>', { desc = 'Go to the previous buffer' })
+vim.keymap.set('n', '<S-l>', '<cmd>bnext<CR>', { desc = 'Go to the next buffer' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
