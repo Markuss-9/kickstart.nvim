@@ -727,6 +727,14 @@ require('lazy').setup({
             },
           },
         },
+
+        jsonls = {
+          settings = {
+            json = {
+              validate = { enable = true },
+            },
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
