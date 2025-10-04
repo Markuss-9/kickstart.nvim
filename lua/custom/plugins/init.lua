@@ -4,4 +4,5 @@
 -- See the kickstart.nvim README for more information
 return {
   { import = 'custom.plugins.fugitive' },
+  { import = 'custom.plugins.undotree' },
 }
