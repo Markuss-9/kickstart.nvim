@@ -6,6 +6,14 @@
 -- be extended to other languages as well. That's why it's called
 -- kickstart.nvim and not kitchen-sink.nvim ;)
 
+local js_based_languages = {
+  'typescript',
+  'javascript',
+  'typescriptreact',
+  'javascriptreact',
+  -- "vue",
+}
+
 return {
   -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
@@ -23,6 +31,68 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+    -- {
+    --   'microsoft/vscode-js-debug',
+    --   -- After install, build it and rename the dist directory to out
+    --   -- build = 'npm install --legacy-peer-deps --no-save && npx gulp vsDebugServerBundle && rm -rf out && mv dist out',
+    --   version = '1.*',
+    --   args = { '/usr/lib/js-debug/dapDebugServer.js' },
+    -- },
+
+    {
+      'microsoft/vscode-js-debug',
+      build = false,
+    },
+    {
+      'mxsdev/nvim-dap-vscode-js',
+      config = function()
+        ---@diagnostic disable-next-line: missing-fields
+        local dap_vscode_js = require 'dap-vscode-js'
+        local dap = require 'dap'
+
+        dap_vscode_js.setup {
+          -- Path of node executable. Defaults to $NODE_PATH, and then "node"
+          -- node_path = "node",
+
+          -- Path to vscode-js-debug installation.
+          debugger_path = '/usr/lib/js-debug',
+
+          -- Command to use to launch the debug server. Takes precedence over "node_path" and "debugger_path"
+          -- debugger_cmd = { "js-debug-adapter" },
+
+          -- which adapters to register in nvim-dap
+          adapters = {
+            'chrome',
+            'pwa-node',
+            'pwa-chrome',
+            'pwa-msedge',
+            'pwa-extensionHost',
+            'node-terminal',
+          },
+        }
+
+        dap.adapters['pwa-node'] = {
+          type = 'server',
+          host = 'localhost',
+          port = 9229,
+          executable = {
+            command = 'node',
+            args = { '/usr/lib/js-debug/out/src/vsDebugServer.js', '9229' },
+          },
+        }
+
+        dap.adapters['pwa-chrome'] = {
+          type = 'server',
+          host = 'localhost',
+          port = 9229,
+          executable = {
+            command = 'node',
+            args = { '/usr/lib/js-debug/out/src/vsDebugServer.js', '9229' },
+          },
+        }
+      end,
+    },
+    -- 'mxsdev/nvim-dap-vscode-js',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -81,6 +151,60 @@ return {
     local dap = require 'dap'
     local dapui = require 'dapui'
 
+    for _, language in ipairs(js_based_languages) do
+      dap.configurations[language] = {
+        -- Debug single nodejs files
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = vim.fn.getcwd(),
+          sourceMaps = true,
+        },
+        -- Debug nodejs processes (make sure to add --inspect when you run the process)
+        {
+          type = 'pwa-node',
+          request = 'attach',
+          name = 'Attach',
+          processId = require('dap.utils').pick_process,
+          cwd = vim.fn.getcwd(),
+          sourceMaps = true,
+        },
+        -- Debug web applications (client side)
+        {
+          type = 'pwa-chrome',
+          request = 'launch',
+          name = 'Launch & Debug Chrome',
+          url = function()
+            local co = coroutine.running()
+            return coroutine.create(function()
+              vim.ui.input({
+                prompt = 'Enter URL: ',
+                default = 'http://localhost:3000',
+              }, function(url)
+                if url == nil or url == '' then
+                  return
+                else
+                  coroutine.resume(co, url)
+                end
+              end)
+            end)
+          end,
+          webRoot = vim.fn.getcwd(),
+          protocol = 'inspector',
+          sourceMaps = true,
+          userDataDir = false,
+        },
+        -- Divider for the launch.json derived configs
+        {
+          name = '----- ↓ launch.json configs ↓ -----',
+          type = '',
+          request = 'launch',
+        },
+      }
+    end
+
     require('mason-nvim-dap').setup {
       -- Makes a best effort to setup the various debuggers with
       -- reasonable debug configurations
@@ -95,6 +219,7 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
+        -- 'node2',
       },
     }
 
