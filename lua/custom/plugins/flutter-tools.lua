@@ -15,7 +15,8 @@ return {
   config = function()
     require('flutter-tools').setup {
       debugger = {
-        enabled = true,
+        -- NOTE: sometimes its not necessary and takes too much space. disabled it for now
+        enabled = false,
       },
     }
     require('telescope').load_extension 'flutter'
@@ -55,5 +56,7 @@ return {
     vim.keymap.set('n', '<leader>fd', function()
       require('telescope').extensions.flutter.commands()
     end, { desc = 'Flutter menu' })
+
+    vim.keymap.set('n', '<leader>fl', ':FlutterLogToggle<CR>', { desc = 'Flutter menu' })
   end,
 }

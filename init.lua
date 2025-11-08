@@ -179,9 +179,19 @@ vim.o.confirm = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>d', function()
+  vim.diagnostic.setloclist()
+  vim.cmd 'lopen 5'
+end, { desc = 'Open diagnostic Quickfix list' })
 
-vim.keymap.set('n', '[p', ':lua vim.diagnostic.open_float()<CR>', { desc = 'Open diagnostic float', noremap = true, silent = true })
+vim.keymap.set('n', '[p', function()
+  vim.diagnostic.open_float()
+end, { desc = 'Open diagnostic float', noremap = true, silent = true })
+
+vim.keymap.set('n', ']p', function()
+  vim.diagnostic.open_float()
+  vim.diagnostic.open_float()
+end, { desc = 'Open diagnostic float', noremap = true, silent = true })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -706,6 +716,7 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
+        cssls = { validate = true },
         --
         eslint = {
           settings = {
@@ -765,7 +776,10 @@ require('lazy').setup({
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+        ensure_installed = {
+          'cssls',
+        },
+        -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
         handlers = {
           function(server_name)
@@ -818,7 +832,9 @@ require('lazy').setup({
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         javascript = { 'prettierd', 'prettier', stop_after_first = true },
-        jsx = { 'prettier' },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
@@ -963,7 +979,7 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      -- require('mini.surround').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -1040,7 +1056,6 @@ require('lazy').setup({
     config = function(_, opts)
       require('neo-tree').setup(opts)
 
-      vim.keymap.set('n', '<leader>e', '<Cmd>Neotree toggle<CR>')
       vim.keymap.set('n', '<leader>o', function()
         vim.cmd 'Neotree reveal'
       end)
@@ -1131,6 +1146,11 @@ harpoon:setup()
 vim.keymap.set('n', '<leader>a', function()
   harpoon:list():add()
 end)
+
+vim.keymap.set('n', '<leader>e', function()
+  harpoon.ui:toggle_quick_menu(harpoon:list())
+end)
+
 vim.keymap.set('n', '<C-e>', function()
   harpoon.ui:toggle_quick_menu(harpoon:list())
 end)
@@ -1210,3 +1230,21 @@ end, { desc = 'Previous Buffer' })
 vim.keymap.set('n', '<leader>fhn', function()
   mark:next()
 end, { desc = 'Next Buffer' })
+
+-- Toggle fullscreen for the current split
+local fullscreen = false
+
+function ToggleFullscreen()
+  if not fullscreen then
+    -- Save the current window layout
+    vim.cmd 'mksession! /tmp/nvim_fullscreen.vim'
+    vim.cmd 'only'
+    fullscreen = true
+  else
+    -- Restore the layout
+    vim.cmd 'source /tmp/nvim_fullscreen.vim'
+    fullscreen = false
+  end
+end
+
+vim.keymap.set('n', '<leader>ff', ToggleFullscreen, { noremap = true, silent = true })
