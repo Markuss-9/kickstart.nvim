@@ -717,6 +717,9 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
         cssls = { validate = true },
+        tailwindcss = {
+          filetypes = { 'typescriptreact', 'javascriptreact', 'html' },
+        },
         --
         eslint = {
           settings = {
@@ -747,6 +750,7 @@ require('lazy').setup({
             },
           },
         },
+        clangd = {},
       }
 
       if utils.is_executable 'go' then
