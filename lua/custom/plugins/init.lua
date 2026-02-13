@@ -6,4 +6,5 @@ return {
   { import = 'custom.plugins.fugitive' },
   { import = 'custom.plugins.undotree' },
   { import = 'custom.plugins.flutter-tools' },
+  { import = 'custom.plugins.markdown' },
 }
