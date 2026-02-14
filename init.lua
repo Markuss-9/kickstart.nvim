@@ -526,6 +526,9 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
+
+      -- install also cmp
+      'hrsh7th/cmp-nvim-lsp',
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -716,6 +719,7 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
+        -- vtsls = {}, -- this is shit, for some import it doesnt show from where
         cssls = { validate = true },
         tailwindcss = {
           filetypes = { 'typescriptreact', 'javascriptreact', 'html' },
@@ -916,7 +920,7 @@ require('lazy').setup({
       completion = {
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        documentation = { auto_show = true, auto_show_delay_ms = 0 },
       },
 
       sources = {
@@ -941,7 +945,12 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
-
+  -- SQL
+  {
+    'tpope/vim-dadbod',
+    'kristijanhusak/vim-dadbod-completion',
+    'kristijanhusak/vim-dadbod-ui',
+  },
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -1252,3 +1261,15 @@ function ToggleFullscreen()
 end
 
 vim.keymap.set('n', '<leader>ff', ToggleFullscreen, { noremap = true, silent = true })
+
+vim.keymap.set('n', '<leader>db', ':DBUI<CR>')
+vim.keymap.set('n', '<leader>dq', ':DBUIExecuteQuery<CR>')
+
+local cmp = require 'cmp'
+
+cmp.setup.filetype({ 'sql' }, {
+  sources = {
+    { name = 'vim-dadbod-completion' },
+    { name = 'buffer' },
+  },
+})
